@@ -31,6 +31,7 @@ export function TimetableView() {
 
   const days: Weekday[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const periods = [1, 2, 3, 4, 5, 6, 7, 8];
+  const [selectedDay, setSelectedDay] = useState<Weekday>("Monday");
 
   // Subject statistics for the semester
   const totalScheduled = useMemo(() => {
@@ -56,8 +57,8 @@ export function TimetableView() {
           <h1 className="font-['Press_Start_2P'] text-lg sm:text-2xl text-[#F1E9D2] leading-tight">
             SECTION TIMETABLES
           </h1>
-          <p className="text-xs text-[#CFC6A9] mt-1">
-            Exact period-by-period weekly schedules transcribed cell-by-cell from official institutional scans.
+          <p className="text-xs text-[#CFC6A9] mt-2 max-w-2xl leading-relaxed">
+            Check your weekly classes, then carry this section straight into your attendance plan.
           </p>
         </div>
 
@@ -117,7 +118,51 @@ export function TimetableView() {
           </div>
         </div>
 
-        <div className="overflow-x-auto border border-[rgba(241,233,210,0.14)] rounded-sm bg-[#141A35] shadow-[4px_4px_0_0_rgba(0,0,0,0.4)]">
+        <div className="md:hidden space-y-4">
+          <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Select timetable day">
+            {days.map((day) => (
+              <button
+                key={day}
+                type="button"
+                role="tab"
+                aria-selected={selectedDay === day}
+                onClick={() => setSelectedDay(day)}
+                className={`shrink-0 px-3 py-2 text-xs font-bold rounded-sm border transition-colors ${
+                  selectedDay === day
+                    ? "bg-[#FF9130] text-[#1B140C] border-[#FF9130]"
+                    : "bg-[#141A35] text-[#CFC6A9] border-[rgba(241,233,210,0.15)]"
+                }`}
+              >
+                {day.slice(0, 3)}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2" role="tabpanel">
+            {(currentSection.weekly[selectedDay] || []).length > 0 ? (
+              [...(currentSection.weekly[selectedDay] || [])].sort((a, b) => a.period - b.period).map((slot) => (
+                <div key={`${selectedDay}-${slot.period}`} className="soft-panel p-4 flex items-center gap-3">
+                  <div className="w-14 shrink-0 text-center">
+                    <span className="block text-[10px] uppercase tracking-wider text-[#CFC6A9]">Period {slot.period}</span>
+                    <span className="block text-xs font-mono font-bold text-[#FFB35C] mt-1">{slot.start}</span>
+                  </div>
+                  <div className="min-w-0 border-l border-[rgba(241,233,210,0.12)] pl-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#F1E9D2]">{slot.code}</span>
+                      {slot.isLab && <span className="text-[10px] text-[#A88BFF] font-bold">LAB</span>}
+                    </div>
+                    <p className="text-sm text-[#F1E9D2] truncate mt-1">{slot.name}</p>
+                    <p className="text-[11px] text-[#CFC6A9] mt-1">{slot.start}–{slot.end}{slot.room ? ` · ${slot.room}` : ""}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="soft-panel p-5 text-center text-xs text-[#CFC6A9]">No scheduled classes on {selectedDay}.</div>
+            )}
+          </div>
+        </div>
+
+        <div className="hidden md:block overflow-x-auto border border-[rgba(241,233,210,0.14)] rounded-sm bg-[#141A35] shadow-[4px_4px_0_0_rgba(0,0,0,0.4)]">
           <table className="w-full text-xs text-left border-collapse min-w-[760px]">
             <thead>
               <tr className="bg-[#0B0E1F] border-b border-[rgba(241,233,210,0.14)] text-[#CFC6A9]">

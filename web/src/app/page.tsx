@@ -13,48 +13,82 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-full">
-      {/* Hero Section */}
-      <section className="py-16 sm:py-24 px-4 text-center max-w-[1000px] mx-auto space-y-6">
-        <div className="inline-block bg-[#141A35] border border-[#FF9130]/40 text-[#FFB35C] px-3.5 py-1 text-xs font-semibold uppercase tracking-wider rounded-sm shadow-[2px_2px_0_0_rgba(0,0,0,0.5)]">
-          VibeCraft 2026 · Round 1 &quot;The Overworld&quot;
-        </div>
+      <section className="max-w-[1120px] mx-auto w-full px-4 pt-10 pb-12 sm:pt-16 sm:pb-16">
+        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8 lg:gap-12 items-center">
+          <div className="space-y-6">
+            <div className="eyebrow inline-flex items-center gap-2 bg-[#141A35] border border-[#FF9130]/40 px-3 py-1.5 rounded-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6FA043]" />
+              Overworld · Round 1
+            </div>
 
-        <h1 className="font-['Press_Start_2P'] text-2xl sm:text-4xl lg:text-5xl text-[#F1E9D2] leading-tight sm:leading-relaxed">
-          Will you make <span className="text-[#FF9130]">75%</span>?
-        </h1>
+            <div className="space-y-4">
+              <h1 className="font-['Press_Start_2P'] text-2xl sm:text-4xl lg:text-5xl text-[#F1E9D2] leading-tight">
+                Your attendance, with a plan.
+              </h1>
+              <p className="text-base sm:text-lg text-[#CFC6A9] max-w-2xl leading-relaxed">
+                Find out what you need to attend, what you can safely miss, and when recovery is no longer possible.
+              </p>
+            </div>
 
-        <p className="text-sm sm:text-lg text-[#CFC6A9] max-w-2xl mx-auto leading-relaxed">
-          Pick your class section, enter your attendance percentage, and see{" "}
-          <strong className="text-[#F1E9D2]">exactly how many classes you can miss</strong> before 29 Nov 2026.
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
           <Link
             href="/planner"
-            className="btn-block text-sm sm:text-base font-bold uppercase tracking-wider inline-flex items-center gap-2"
+            className="btn-block text-sm sm:text-base font-bold inline-flex items-center gap-2 rounded-sm"
           >
-            <span>Check my attendance</span>
+            <span>Start attendance plan</span>
             <span>→</span>
           </Link>
 
           <Link
             href="/timetable"
-            className="px-5 py-3 bg-[#141A35] text-[#F1E9D2] border border-[rgba(241,233,210,0.2)] text-sm font-semibold rounded-sm hover:border-[#FF9130] transition-colors shadow-[3px_3px_0_0_rgba(0,0,0,0.5)]"
+            className="px-5 py-3 bg-[#141A35] text-[#F1E9D2] border border-[rgba(241,233,210,0.2)] text-sm font-semibold rounded-sm hover:border-[#FF9130] transition-colors"
           >
-            View Timetables
+            Browse timetables
           </Link>
+            </div>
+
+            <p className="text-xs text-[#CFC6A9]">
+              Based on scheduled classes from 29 Aug to 29 Nov 2026.
+            </p>
+          </div>
+
+          <div className="soft-panel p-5 sm:p-6 space-y-5 shadow-[4px_4px_0_0_rgba(0,0,0,0.28)]">
+            <div className="flex items-center justify-between gap-3 border-b border-[rgba(241,233,210,0.1)] pb-4">
+              <div>
+                <p className="eyebrow">Your route</p>
+                <h2 className="text-lg font-bold text-[#F1E9D2] mt-1">Three quick checks</h2>
+              </div>
+              <span className="text-2xl text-[#FF9130]" aria-hidden="true">↗</span>
+            </div>
+            <div className="space-y-4">
+              {[
+                ["01", "Choose your section", "Use your verified timetable."],
+                ["02", "Enter attendance", "Percentage or exact counts."],
+                ["03", "Get your answer", "See your recovery room."],
+              ].map(([number, title, description]) => (
+                <div key={number} className="flex gap-3 items-start">
+                  <span className="w-7 h-7 shrink-0 rounded-sm bg-[#FF9130] text-[#1B140C] text-xs font-bold flex items-center justify-center font-mono">
+                    {number}
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-bold text-[#F1E9D2]">{title}</h3>
+                    <p className="text-xs text-[#CFC6A9] mt-0.5">{description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Live Stats Strip */}
-      <section className="border-y border-[rgba(241,233,210,0.12)] bg-[#141A35]/60 py-6 px-4">
+      <section className="border-y border-[rgba(241,233,210,0.12)] bg-[#141A35]/60 py-5 px-4">
         <div className="max-w-[1120px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div className="p-3">
             <span className="block font-mono text-2xl sm:text-3xl font-extrabold text-[#F1E9D2]">
               {sections.length}
             </span>
             <span className="text-xs uppercase tracking-wider text-[#CFC6A9]">
-              Class Sections
+              Verified sections
             </span>
           </div>
           <div className="p-3">
@@ -62,7 +96,7 @@ export default function Home() {
               {totalSubjects}
             </span>
             <span className="text-xs uppercase tracking-wider text-[#CFC6A9]">
-              Subject Timetables
+              Subject records
             </span>
           </div>
           <div className="p-3">
@@ -70,7 +104,7 @@ export default function Home() {
               {totalDays}
             </span>
             <span className="text-xs uppercase tracking-wider text-[#CFC6A9]">
-              Semester Days
+              Semester days
             </span>
           </div>
           <div className="p-3">
@@ -78,53 +112,33 @@ export default function Home() {
               100%
             </span>
             <span className="text-xs uppercase tracking-wider text-[#CFC6A9]">
-              Deterministic Math
+              Exact calculations
             </span>
           </div>
         </div>
       </section>
 
-      {/* 3 Step Explainer */}
-      <section className="py-16 px-4 max-w-[1120px] mx-auto space-y-10">
-        <div className="text-center space-y-2">
-          <h2 className="font-['Press_Start_2P'] text-base sm:text-lg text-[#F1E9D2]">
-            HOW IT WORKS
-          </h2>
-          <p className="text-xs text-[#CFC6A9]">
-            A decision engine that eliminates guesswork before detention becomes unavoidable.
-          </p>
+      <section className="max-w-[1120px] mx-auto w-full px-4 py-12 sm:py-16">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+          <div>
+            <p className="eyebrow">What you get</p>
+            <h2 className="section-title mt-2">A clearer answer before it is too late.</h2>
+          </div>
+          <p className="text-xs text-[#CFC6A9] max-w-sm">Turn a portal percentage into an attendance decision you can act on today.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-6 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)] space-y-3">
-            <div className="w-8 h-8 rounded-sm bg-[#FF9130] text-[#1B140C] font-bold text-sm flex items-center justify-center font-mono">
-              1
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            ["Know what to attend", "See the minimum number of remaining classes needed to stay above 75%.", "#FF9130"],
+            ["Protect your 90% goal", "Check whether 90% is still reachable and how much effort it needs.", "#A88BFF"],
+            ["Catch risk early", "Get a direct warning when recovery is mathematically impossible.", "#6FA043"],
+          ].map(([title, description, color]) => (
+            <div key={title} className="soft-panel p-5 space-y-3">
+              <span className="block w-8 h-1 rounded-full" style={{ backgroundColor: color }} />
+              <h3 className="font-bold text-base text-[#F1E9D2]">{title}</h3>
+              <p className="text-sm text-[#CFC6A9] leading-relaxed">{description}</p>
             </div>
-            <h3 className="font-bold text-base text-[#F1E9D2]">Pick your section</h3>
-            <p className="text-xs text-[#CFC6A9] leading-relaxed">
-              Select your department &amp; class year from the 13 verified institutional timetables. Real scheduled periods, not estimates.
-            </p>
-          </div>
-
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-6 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)] space-y-3">
-            <div className="w-8 h-8 rounded-sm bg-[#A88BFF] text-[#1B140C] font-bold text-sm flex items-center justify-center font-mono">
-              2
-            </div>
-            <h3 className="font-bold text-base text-[#F1E9D2]">Enter attendance</h3>
-            <p className="text-xs text-[#CFC6A9] leading-relaxed">
-              Input percentage (e.g. 68%) or switch to exact attended/held counts. The engine uses integer arithmetic with conservative lower-bound estimation.
-            </p>
-          </div>
-
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-6 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)] space-y-3">
-            <div className="w-8 h-8 rounded-sm bg-[#6FA043] text-[#1B140C] font-bold text-sm flex items-center justify-center font-mono">
-              3
-            </div>
-            <h3 className="font-bold text-base text-[#F1E9D2]">Get your plan</h3>
-            <p className="text-xs text-[#CFC6A9] leading-relaxed">
-              Instantly see your required classes for 75% and 90%, safe absence budget, and early warning before irreversible detention occurs.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
     </div>

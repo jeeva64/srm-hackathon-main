@@ -34,7 +34,7 @@ export function AttendanceTable({
   return (
     <div className="space-y-4">
       {/* Bulk Helpers */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#141A35] p-3 rounded-sm border border-[rgba(241,233,210,0.1)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#1C2448]/60 p-3.5 rounded-sm border border-[rgba(241,233,210,0.1)]">
         <div className="flex items-center gap-2">
           <label htmlFor="bulk-pct-input" className="text-xs text-[#CFC6A9] font-medium">
             Set all subjects to:
@@ -59,6 +59,8 @@ export function AttendanceTable({
           </button>
         </div>
 
+        <span className="text-[11px] text-[#CFC6A9]">Use this only if several subjects share the same portal percentage.</span>
+
         <button
           type="button"
           onClick={onClearAll}
@@ -69,7 +71,7 @@ export function AttendanceTable({
       </div>
 
       {/* Rows */}
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
         {rows.map((row) => {
           const isExact = row.mode === "exact";
           const rowError = errors[row.code];
@@ -148,7 +150,7 @@ export function AttendanceTable({
                       </div>
 
                       <span className="text-xs text-[#CFC6A9]">
-                        Timetable estimate: ~{row.heldEstimate} classes held so far
+                        {row.heldEstimate > 0 ? `Scheduled estimate: ${row.heldEstimate} classes held so far` : "Scheduled estimate unavailable"}
                       </span>
                     </div>
                   </div>
@@ -191,7 +193,7 @@ export function AttendanceTable({
                     </div>
 
                     <span className="text-xs text-[#CFC6A9]">
-                      (Scheduled held: ~{row.heldEstimate})
+                      {row.heldEstimate > 0 ? `(Scheduled estimate: ${row.heldEstimate})` : "(Scheduled estimate unavailable)"}
                     </span>
                   </div>
                 )}

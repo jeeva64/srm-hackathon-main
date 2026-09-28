@@ -16,6 +16,7 @@ import { IrreversibleAlert } from "./IrreversibleAlert";
 import { StatusBanner } from "./StatusBanner";
 import { KpiGrid } from "./KpiGrid";
 import { SubjectCard } from "./SubjectCard";
+import { AttendanceHealthChart } from "./AttendanceHealthChart";
 
 
 
@@ -64,19 +65,28 @@ export function Planner() {
 
     return currentSection.subjects.map((sub) => {
       const s = saved[sub.code];
-      const est = heldSoFar[sub.code] || 16;
+      const est = Math.max(0, heldSoFar[sub.code] ?? 0);
       return {
         code: sub.code,
         name: sub.name,
         weeklyPeriods: sub.weeklyPeriods,
         mode: s?.mode || "percent",
-        percentRaw: s?.percentRaw !== undefined ? s.percentRaw : "75",
+        percentRaw: s?.percentRaw !== undefined ? s.percentRaw : "",
         attendedRaw: s?.attendedRaw || "",
         heldRaw: s?.heldRaw || "",
         heldEstimate: est,
       };
     });
   });
+
+  const displayRows = useMemo(() => {
+    if (!today) return rows;
+    const estimates = countBySubject(currentSection, SEMESTER_START, today);
+    return rows.map((row) => ({
+      ...row,
+      heldEstimate: Math.max(0, estimates[row.code] ?? 0),
+    }));
+  }, [currentSection, rows, today]);
 
   // Safe update when section switch happens
   const onSectionChange = (newSecId: string) => {
@@ -90,13 +100,13 @@ export function Planner() {
     setRows(
       targetSection.subjects.map((sub) => {
         const s = saved[sub.code];
-        const est = ests[sub.code] || 16;
+        const est = Math.max(0, ests[sub.code] ?? 0);
         return {
           code: sub.code,
           name: sub.name,
           weeklyPeriods: sub.weeklyPeriods,
           mode: s?.mode || "percent",
-          percentRaw: s?.percentRaw !== undefined ? s.percentRaw : "75",
+          percentRaw: s?.percentRaw !== undefined ? s.percentRaw : "",
           attendedRaw: s?.attendedRaw || "",
           heldRaw: s?.heldRaw || "",
           heldEstimate: est,
@@ -158,7 +168,6 @@ export function Planner() {
     for (const r of rows) {
       if (r.mode === "percent") {
         if (r.percentRaw.trim() === "") {
-          errors[r.code] = "Enter attendance % or switch to exact counts";
           continue;
         }
         const p = parseFloat(r.percentRaw);
@@ -178,7 +187,9 @@ export function Planner() {
         });
       } else {
         if (r.attendedRaw.trim() === "" || r.heldRaw.trim() === "") {
-          errors[r.code] = "Enter both attended and held counts";
+          if (r.attendedRaw.trim() !== "" || r.heldRaw.trim() !== "") {
+            errors[r.code] = "Enter both attended and held counts";
+          }
           continue;
         }
         const a = parseInt(r.attendedRaw, 10);
@@ -240,7 +251,7 @@ export function Planner() {
   const isSemesterNotStarted = today < SEMESTER_START;
 
   return (
-    <div className="max-w-[1120px] mx-auto px-4 py-8">
+    <div className="max-w-[1200px] mx-auto px-4 py-6 sm:py-10 space-y-8">
       {isSemesterEnded && (
         <div className="mb-6 p-4 bg-[#141A35] border-2 border-[#FF9130] rounded-sm text-[#FFB35C] text-sm flex items-center justify-between">
           <span>The 2026 semester has concluded (ended 29 Nov 2026). Displaying final recorded standing.</span>
@@ -252,20 +263,24 @@ export function Planner() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: 3 Steps */}
-        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-20">
-          <div className="space-y-1">
-            <h1 className="font-['Press_Start_2P'] text-lg sm:text-xl text-[#F1E9D2] leading-snug">
-              ATTENDANCE PLANNER
+      <div className="space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <p className="eyebrow">Your attendance route</p>
+            <h1 className="section-title">
+              Attendance planner
             </h1>
             <p className="text-xs text-[#CFC6A9]">
-              Configure your section and attendance to calculate remaining classes and recovery room.
+              Add your current numbers to see exactly what to attend and what you can still miss.
             </p>
           </div>
+          <div className="soft-panel px-4 py-3 text-xs text-[#CFC6A9] sm:max-w-xs">
+            <span className="text-[#6FA043] font-bold">Tip:</span> Start with the percentage shown in your college portal. Exact counts are optional.
+          </div>
+        </div>
 
-          {/* STEP 1: Section */}
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)]">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.28)] xl:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-5 h-5 rounded-full bg-[#FF9130] text-[#1B140C] font-bold text-xs flex items-center justify-center">
                 1
@@ -275,8 +290,7 @@ export function Planner() {
             <SectionPicker selectedId={sectionId} onSelect={onSectionChange} />
           </div>
 
-          {/* STEP 2: Attendance Inputs */}
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)]">
+          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.28)] xl:col-span-2">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#FF9130] text-[#1B140C] font-bold text-xs flex items-center justify-center">
@@ -285,20 +299,20 @@ export function Planner() {
                 <h2 className="font-bold text-sm text-[#F1E9D2]">Your Current Attendance</h2>
               </div>
               <span className="text-[11px] text-[#A88BFF]">
-                {validInputs.length}/{rows.length} valid
+                {validInputs.length}/{rows.length} completed
               </span>
             </div>
             <AttendanceTable
-              rows={rows}
+              rows={displayRows}
               onChangeRow={handleChangeRow}
               onSetAllPercent={handleSetAllPercent}
               onClearAll={handleClearAll}
               errors={rowErrors}
             />
           </div>
+        </div>
 
-          {/* STEP 3: Planning Date */}
-          <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.4)]">
+        <div className="bg-[#141A35] border border-[rgba(241,233,210,0.12)] p-4 sm:p-5 rounded-sm shadow-[3px_3px_0_0_rgba(0,0,0,0.28)]">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-5 h-5 rounded-full bg-[#FF9130] text-[#1B140C] font-bold text-xs flex items-center justify-center">
                 3
@@ -313,13 +327,11 @@ export function Planner() {
               onPolicyChange={setGapPolicy}
               gapClasses={gapClasses}
             />
-          </div>
         </div>
 
-        {/* Right Column: Instant Results */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="space-y-6">
           {planResult && planResult.ok ? (
-            <div>
+              <div aria-live="polite">
               <IrreversibleAlert subjects={planResult.subjects} />
 
               <StatusBanner
@@ -337,6 +349,8 @@ export function Planner() {
                 totalSubjects={planResult.subjects.length}
                 planningDate={planningDate}
               />
+
+              <AttendanceHealthChart overall={planResult.overall} />
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -374,11 +388,11 @@ export function Planner() {
               </ul>
             </div>
           ) : (
-            <div className="p-12 text-center bg-[#141A35] border border-[rgba(241,233,210,0.1)] rounded-sm space-y-3">
-              <span className="text-3xl block">🎓</span>
-              <h3 className="font-bold text-base text-[#F1E9D2]">Enter your attendance</h3>
+            <div className="p-8 sm:p-12 text-center bg-[#141A35] border border-[rgba(241,233,210,0.1)] rounded-sm space-y-3">
+              <span className="eyebrow block">Your plan is waiting</span>
+              <h3 className="font-bold text-base text-[#F1E9D2]">Add at least one subject</h3>
               <p className="text-xs text-[#CFC6A9] max-w-sm mx-auto">
-                Fill in attendance for at least one subject on the left to see your full attendance plan, recovery calculations, and detention alerts.
+                Enter the percentage shown in your college portal. We will turn it into a simple attendance plan.
               </p>
             </div>
           )}

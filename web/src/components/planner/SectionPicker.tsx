@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { getSections } from "@/lib/data";
 
 interface SectionPickerProps {
@@ -10,17 +10,42 @@ interface SectionPickerProps {
 
 export function SectionPicker({ selectedId, onSelect }: SectionPickerProps) {
   const sections = getSections();
+  const [search, setSearch] = useState("");
 
   // Group sections by year
   const years = [4, 3, 2, 1];
   const yearRoman: Record<number, string> = { 4: "Year IV", 3: "Year III", 2: "Year II", 1: "Year I" };
+  const filteredSections = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return sections;
+    return sections.filter((section) =>
+      [section.id, section.department, String(section.year), section.academicYear]
+        .join(" ")
+        .toLowerCase()
+        .includes(query)
+    );
+  }, [search, sections]);
 
   return (
     <div className="space-y-4">
       {/* Searchable / Fast Select dropdown */}
-      <div className="flex items-center gap-3">
+      <div className="space-y-2">
+        <label htmlFor="section-search" className="text-xs uppercase font-bold text-[#CFC6A9] shrink-0 tracking-wider">
+          Find your section
+        </label>
+        <input
+          id="section-search"
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search by section, department, or year"
+          className="w-full bg-[#1C2448] text-[#F1E9D2] border border-[rgba(241,233,210,0.2)] rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-[#FF9130]"
+        />
+      </div>
+
+      <div className="space-y-2 sm:flex sm:items-center sm:gap-3">
         <label htmlFor="section-select" className="text-xs uppercase font-bold text-[#CFC6A9] shrink-0 tracking-wider">
-          Quick Select:
+          Selected section
         </label>
         <select
           id="section-select"
@@ -38,9 +63,9 @@ export function SectionPicker({ selectedId, onSelect }: SectionPickerProps) {
       </div>
 
       {/* Visual grouped cards */}
-      <div className="space-y-4 max-h-[340px] overflow-y-auto pr-1">
+      <div className="hidden sm:block space-y-4" aria-label="Matching class sections">
         {years.map((yr) => {
-          const inYear = sections.filter((s) => s.year === yr);
+          const inYear = filteredSections.filter((s) => s.year === yr);
           if (inYear.length === 0) return null;
 
           return (
@@ -85,6 +110,11 @@ export function SectionPicker({ selectedId, onSelect }: SectionPickerProps) {
             </div>
           );
         })}
+        {filteredSections.length === 0 && (
+          <p className="text-xs text-[#CFC6A9] bg-[#1C2448]/60 border border-[rgba(241,233,210,0.1)] p-3 rounded-sm">
+            No matching sections. Try a section code such as III-ECE-B.
+          </p>
+        )}
       </div>
     </div>
   );
