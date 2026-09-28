@@ -32,6 +32,12 @@ export function Header() {
             Timetables
           </Link>
           <Link
+            href="/rooms"
+            className="hidden sm:block text-[#CFC6A9] hover:text-[#FF9130] transition-colors px-2 py-2 rounded-sm hover:bg-[#141A35]"
+          >
+            Room Finder
+          </Link>
+          <Link
             href="/how-it-works"
             className="hidden sm:block text-[#CFC6A9] hover:text-[#FF9130] transition-colors px-2 py-2 rounded-sm hover:bg-[#141A35]"
           >
