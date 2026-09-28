@@ -17,6 +17,8 @@ import { StatusBanner } from "./StatusBanner";
 import { KpiGrid } from "./KpiGrid";
 import { SubjectCard } from "./SubjectCard";
 import { AttendanceHealthChart } from "./AttendanceHealthChart";
+import { LeaveSimulator } from "./LeaveSimulator";
+import { AttendanceAdvisor } from "./AttendanceAdvisor";
 
 
 
@@ -352,6 +354,12 @@ export function Planner() {
 
               <AttendanceHealthChart overall={planResult.overall} />
 
+              <LeaveSimulator
+                section={currentSection}
+                subjects={planResult.subjects}
+                today={today}
+              />
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-['Press_Start_2P'] text-xs text-[#F1E9D2] uppercase tracking-wider">
@@ -377,6 +385,13 @@ export function Planner() {
                   })}
                 </div>
               </div>
+
+              <AttendanceAdvisor
+                section={currentSection}
+                subjects={planResult.subjects}
+                overall={planResult.overall}
+                today={today}
+              />
             </div>
           ) : planResult && !planResult.ok ? (
             <div className="p-6 bg-[#141A35] border-2 border-[#E33D2E] rounded-sm text-[#F1E9D2] space-y-2">
