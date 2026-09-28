@@ -1,5 +1,5 @@
 /**
- * rooms.ts — deterministic, timetable-based room availability (Round 2 · Phase 1).
+ * rooms.ts — deterministic, timetable-based room availability.
  *
  * Source: data/rooms.json, generated from the same verified timetables as the attendance app.
  * A room is OCCUPIED at time t if any of the 13 sections has a class there with start <= t < end.

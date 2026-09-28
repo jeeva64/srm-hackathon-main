@@ -79,7 +79,7 @@ export default function RoomsPage() {
   return (
     <main className="max-w-[1200px] mx-auto px-4 py-7 sm:py-10 space-y-7">
       <header className="space-y-3">
-        <p className="eyebrow">Round 2 · Phase 1</p>
+        <p className="eyebrow">Timetable-based room finder</p>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div><h1 className="font-['Press_Start_2P'] text-xl sm:text-3xl text-[#F1E9D2] leading-tight">ROOM FINDER</h1><p className="text-sm text-[#CFC6A9] mt-3 max-w-2xl">Find a timetable-verified room that is free at the time you need it.</p></div>
           <Link href="/planner" className="text-sm text-[#FFB35C] hover:text-[#F1E9D2] inline-flex items-center gap-2">Back to planner <ArrowRight className="w-4 h-4" /></Link>

@@ -27,7 +27,7 @@ export function Footer() {
     <footer className="mt-auto border-t border-[rgba(241,233,210,0.12)] bg-[#141A35] py-6 px-4 text-xs text-[#CFC6A9]">
       <div className="max-w-[1120px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <span className="font-semibold text-[#F1E9D2]">Attendance Predictor</span> · VibeCraft 2026 Round 1
+          <span className="font-semibold text-[#F1E9D2]">Attendance Predictor</span> · VibeCraft 2026
           <p className="text-[11px] text-[#CFC6A9] mt-1">
             Deterministic decision engine based on scheduled occurrences. 1 timetable period = 1 attendance hour.
           </p>

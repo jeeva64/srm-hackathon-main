@@ -18,7 +18,7 @@ export default function Home() {
           <div className="space-y-6">
             <div className="eyebrow inline-flex items-center gap-2 bg-[#141A35] border border-[#FF9130]/40 px-3 py-1.5 rounded-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-[#6FA043]" />
-              Overworld · Round 1
+              Attendance decision engine
             </div>
 
             <div className="space-y-4">

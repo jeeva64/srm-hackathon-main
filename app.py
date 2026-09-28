@@ -1,6 +1,6 @@
 """
 Attendance Predictor — Streamlit UI
-VIBECRAFT 2026, Round 1: The Overworld — Phase 1 Core Calculator
+ VIBECRAFT 2026 — Attendance Predictor and Decision Engine
 
 This file is UI ONLY. Every formula lives in engine/calendar_engine.py and
 engine/attendance_engine.py (pure functions, unit-tested — see tests/). The UI
