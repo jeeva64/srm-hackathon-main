@@ -20,18 +20,22 @@ web/
 ├── src/app/                    # Routes: /, /planner, /rooms, /timetable, /how-it-works
 │   ├── page.tsx               # Landing page with live stats strip
 │   ├── planner/page.tsx       # Core Decision Engine
+│   ├── rooms/page.tsx         # Timetable-based Room Finder
 │   ├── timetable/page.tsx     # Weekly timetable grid + audit
 │   └── how-it-works/page.tsx  # Technical methodology
 ├── src/components/             # Planner, Timetable, KPI grids, status badges
 │   ├── planner/               # SectionPicker, AttendanceTable, KpiGrid, etc.
 │   ├── timetable/             # TimetableView
 │   └── ui/                    # StatusChip, Goal90Badge
-├── src/lib/                   # TypeScript deterministic attendance engine
+├── src/lib/                   # TypeScript deterministic engines and helpers
 │   ├── attendance.ts          # Core math: required classes, status, trajectory
 │   ├── calendar.ts            # Semester calendar, scheduled occurrences
 │   ├── data.ts                # Section/timetable data access
+│   ├── rooms.ts                # Timetable-based room availability
+│   ├── roomQuery.ts            # Natural-language room filter parser
 │   ├── useToday.ts            # Hydration-safe browser date
 │   └── storage.ts             # localStorage persistence
+├── src/app/api/room-query/     # Optional server-side Gemini filter extraction
 ├── src/data/timetables.json   # 13 verified class sections
 ├── src/data/rooms.json        # Known rooms and timetable occupancy
 ├── tests/engine.test.ts       # Attendance engine tests
