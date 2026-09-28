@@ -7,108 +7,106 @@ A decision engine that eliminates guesswork by calculating precisely how many cl
 
 ---
 
-## 📁 Repository Layout
+## 🌐 Live Demo
+
+**https://neuragenzers.vercel.app/**
+
+---
+
+## 📁 Repository Layout (Frontend Only)
 
 ```
-attendance_predictor/
-├── web/                   # Next.js 16 App Router frontend (TypeScript, Tailwind v4)
-│   ├── src/app/           # Routes: /, /planner, /timetable, /how-it-works
-│   ├── src/components/    # Planner, Timetable, KPI grids, status badges
-│   ├── src/lib/           # TypeScript deterministic attendance engine, calendar, useToday
-│   ├── src/data/          # timetables.json (13 verified class sections)
-│   └── tests/             # 11 tests (including 3,658 reference cross-checks)
-├── engine/                # Core Python deterministic calculation engines
-│   ├── attendance_engine.py  # Integer math, status classifications, trajectory, plan() API
-│   └── calendar_engine.py    # Semester calendar, scheduled occurrences, slot resolution
-├── data_clean/            # Normalized CSV timetables, schedules, subject catalogues
-├── data_raw/              # Verbatim transcription and raw scans of the 10 PDF pages
-├── pipeline/              # Data ingestion, normalization, and OCR cross-check pipelines
-├── reports/               # Data quality audit, contact hours, and EDA reports
-├── tests/                 # Python unit test suite (tests/test_engine.py — 24 tests)
-├── app.py                 # Streamlit interactive desktop prototype
-└── requirements.txt       # Python dependencies
+web/
+├── src/app/                    # Routes: /, /planner, /timetable, /how-it-works
+│   ├── page.tsx               # Landing page with live stats strip
+│   ├── planner/page.tsx       # Core Decision Engine
+│   ├── timetable/page.tsx     # Weekly timetable grid + audit
+│   └── how-it-works/page.tsx  # Technical methodology
+├── src/components/             # Planner, Timetable, KPI grids, status badges
+│   ├── planner/               # SectionPicker, AttendanceTable, KpiGrid, etc.
+│   ├── timetable/             # TimetableView
+│   └── ui/                    # StatusChip, Goal90Badge
+├── src/lib/                   # TypeScript deterministic attendance engine
+│   ├── attendance.ts          # Core math: required classes, status, trajectory
+│   ├── calendar.ts            # Semester calendar, scheduled occurrences
+│   ├── data.ts                # Section/timetable data access
+│   ├── useToday.ts            # Hydration-safe browser date
+│   └── storage.ts             # localStorage persistence
+├── src/data/timetables.json   # 13 verified class sections (6000+ lines)
+├── tests/engine.test.ts       # 11 tests (3,658 cross-checks vs Python reference)
+├── package.json               # Next.js 16, React 19, Tailwind v4
+├── next.config.ts             # Next.js configuration
+├── tsconfig.json              # TypeScript configuration
+└── eslint.config.mjs          # ESLint flat config
 ```
 
 ---
 
-## 🚀 Running the Web Application (Next.js)
-
-The modern client-side frontend is located in `web/`.
+## 🚀 Running the Web Application
 
 ```bash
-# 1. Navigate to the web frontend directory
 cd web
-
-# 2. Install dependencies
 npm install
-
-# 3. Launch local development server
-npm run dev
+npm run dev        # http://localhost:3000
+npm run lint       # ESLint (0 errors)
+npm run build      # Production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser:
-- **`/`** — Landing page with live semester stats strip and feature explainer.
-- **`/planner`** — Core Decision Engine: section selector, quick-percentage & exact-count inputs, lookahead planning date picker with gap policy ("attend all" vs "miss all"), 6 KPI answers, and subject breakdown.
-- **`/timetable`** — Weekly period-by-period timetable grid (Mon–Fri) and semester occurrence audit for each section.
-- **`/how-it-works`** — Transparent technical methodology, integer arithmetic proofs, and data provenance.
+### Routes
 
-### Production Build & Linting
-
-```bash
-cd web
-npm run lint      # Runs ESLint (0 errors, 0 warnings)
-npm run build     # Compiles production Next.js build with Turbopack
-```
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page with live semester stats & feature explainer |
+| `/planner` | Core Decision Engine — section selector, attendance inputs, 6 KPI answers, subject breakdown |
+| `/timetable` | Weekly period-by-period grid (Mon–Fri) + semester occurrence audit |
+| `/how-it-works` | Transparent methodology, integer arithmetic proofs, data provenance |
 
 ---
 
-## 🧪 Running the Tests
+## 🧪 Tests
 
-### 1. TypeScript Engine Test Suite (Frontend)
-Runs with Node's native test runner via `tsx`:
 ```bash
 cd web
 npx tsx --test tests/engine.test.ts
 ```
-*Result:* **11 passed, 0 failed** (includes 3,658 per-subject parity cross-checks against the Python reference engine across 400 random student plans).
 
-### 2. Python Engine Test Suite
-```bash
-python -m pytest -q tests
-```
-*Result:* **24 passed in ~3.0s**.
+**11 passed** — includes 3,658 per-subject parity cross-checks against Python reference engine.
 
 ---
 
-## 🐍 Running the Streamlit Prototype (Python)
+## 📐 Key Assumptions (Frontend)
 
-```bash
-pip install -r requirements.txt streamlit plotly
-streamlit run app.py
-```
-Runs at [http://localhost:8501](http://localhost:8501).
-
----
-
-## 📐 Key Assumptions & Counting Rules
-
-1. **Counting Unit**: 1 timetable period = 1 attendance hour. A 2-period lab block counts as 2 discrete attendance hours.
-2. **Instruction Days**: Monday through Friday only. Saturdays and Sundays are non-instructional.
-3. **Scheduled vs Conducted**: Class counts reflect scheduled occurrences from the timetable. Classes before today are counted as held; classes from the planning date forward are counted as remaining.
-4. **Hydration-Safe Device Clock**: Today's date is dynamically read from the student's browser via `useToday()`, never hardcoded or pre-rendered at build time.
-5. **Exact Integer Arithmetic**: To eliminate IEEE-754 floating-point drift (e.g. `0.55 * 100 = 55.00000000000001`), all threshold comparisons use exact integer cross-multiplication:
-   $$\frac{\text{attended}}{\text{held}} \ge \frac{p}{q} \iff q \times \text{attended} \ge p \times \text{held}$$
-6. **Conservative Estimation**: In percentage mode, the engine resolves rounding ambiguities by choosing the lowest consistent attended count, ensuring students never receive over-optimistic safety margins.
-7. **All 13 Sections Supported**: Includes the 9 active 2026-27 sections plus the 4 first-year 2024-25 sections (clearly flagged with an archival badge).
-8. **Mathematical Irreversible Proof**: When recovery to 75% is mathematically impossible, the dashboard displays:
-   $$\frac{A + R}{H + R} < 75.00\%$$
+1. **Counting Unit**: 1 timetable period = 1 attendance hour (2-period lab = 2)
+2. **Instruction Days**: Monday–Friday only
+3. **Today's Date**: Read dynamically from browser via `useToday()` — never hardcoded
+4. **Exact Integer Arithmetic**: Cross-multiplication avoids floating-point drift
+5. **Conservative Estimation**: Percentage mode picks lowest consistent attended count
+6. **All 13 Sections**: 9 active 2026-27 + 4 archival 2024-25 (flagged with badge)
 
 ---
 
 ## ☁️ Deployment
 
-- **Frontend (Vercel)**:
-  - **Framework Preset**: Next.js
-  - **Root Directory**: `web`
-  - **Build Command**: `next build`
-  - **Output Directory**: `.next`
+| Platform | Config |
+|----------|--------|
+| **Vercel** (Live) | Framework: Next.js, Root: `web/`, Build: `next build` |
+| **Live URL** | **https://neuragenzers.vercel.app/** |
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Runtime**: React 19
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS v4
+- **Charts**: Recharts 3
+- **Fonts**: Press Start 2P, Rubik
+- **Motion**: Motion (Framer Motion)
+- **Linting**: ESLint 9 (flat config)
+
+---
+
+## 📄 License
+
+Built for VibeCraft 2026 — SRM IST Tiruchirappalli
